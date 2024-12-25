@@ -18,10 +18,13 @@ test.describe('Web Tables Tests', () => {
             }
         });
 
-        await page.goto(`${process.env.BASE_URL}/webtables`);
+        logger.info('Navigating to Web Tables page');
+        await page.goto(`${process.env.BASE_URL}/webtables`, { waitUntil: 'networkidle' });
 
-        await page.waitForLoadState('domcontentloaded');
-        await page.waitForSelector('#addNewRecordButton', {state: 'visible'});
+        logger.info('Checking visibility of addNewRecordButton');
+        const isAddButtonVisible = await page.isVisible('#addNewRecordButton');
+        console.log('Is addNewRecordButton visible:', isAddButtonVisible);
+        if (!isAddButtonVisible) throw new Error('#addNewRecordButton is not visible');
 
         logger.info('Opening the registration form');
         await page.click('#addNewRecordButton');
@@ -43,9 +46,10 @@ test.describe('Web Tables Tests', () => {
         await page.waitForSelector('.rt-tr-group:last-child', {state: 'visible', timeout: 5000});
 
         logger.info('Validating new record in the table');
-        const [firstNameCell] = await Promise.all([page.locator('.rt-tr-group:last-child').textContent()]);
+        const [firstNameCell] = await Promise.all([page.locator('div:nth-of-type(1) > ' +
+            'div:nth-of-type(2) > div:nth-of-type(4) > div > div:nth-of-type(1)').textContent()]);
         console.log('First name cell:', firstNameCell);
-        expect(firstNameCell.trim()).toBe("");
+        expect(firstNameCell.trim()).toBe("Alice");
     });
 
 });
