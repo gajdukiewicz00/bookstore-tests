@@ -30,6 +30,9 @@ jobs:
       - name: Install Allure
         run: npm install -g allure-commandline
 
+      - name: Load environment variables
+        run: echo "BASE_URL=https://demoqa.com" >> .env
+
       - name: Generate Allure Report
         run: allure generate allure-results --clean
 
