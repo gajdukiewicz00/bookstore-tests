@@ -1,10 +1,10 @@
 const logger = require('../../utils/logger')
 import {test, expect} from "@playwright/test";
 
-test.describe("Button Test",()=>{
-    test('User can interact with buttons', async ({page}) =>{
+test.describe("Button Test", () => {
+    test('User can interact with buttons', async ({page}) => {
         logger.info('Navigating to Buttons page');
-        await page.goto(`${process.env.BASE_URL}/buttons`, { waitUntil: 'networkidle'});
+        await page.goto(`${process.env.BASE_URL}/buttons`, {waitUntil: 'networkidle'});
 
         logger.info('Double clicking the button');
         await page.dblclick('text=Double Click Me');
@@ -15,7 +15,7 @@ test.describe("Button Test",()=>{
         logger.info('Right clicking the button');
         await page.click('text=Right Click Me', {button: 'right'});
         const rightClickMessage = await page.locator('#rightClickMessage').textContent();
-        console.log('Right click message:',rightClickMessage);
+        console.log('Right click message:', rightClickMessage);
         expect(rightClickMessage).toContain('You have done a right click');
 
         logger.info('Test completed successfully');
