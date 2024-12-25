@@ -5,9 +5,16 @@ dotenv.config();
 
 export default defineConfig({
     testDir: './src/tests',
-    reporter: [['html', { outputFolder: 'playwright-report' }]],
+    timeout: 30000,
+    retries: 1,
+    reporter: [
+        ['list'],
+        ['html', { outputFolder: 'playwright-report' }],
+    ],
     use: {
-        baseURL: process.env.BASE_URL || 'https://restful-booker.herokuapp.com',
+        baseURL: process.env.BASE_URL || 'https://demoqa.com',
+        headless: true,
         trace: 'on',
     },
 });
+
