@@ -4,7 +4,7 @@ import {test, expect} from '@playwright/test';
 test.describe('Text Box Tests', () => {
     test('User can fill and submit the Text Box form', async ({page}) => {
         logger.info('Navigating to Text Box page');
-        await page.goto(`${process.env.BASE_URL}/text-box`, { waitUntil: 'networkidle' });
+        await page.goto(`${process.env.BASE_URL}/text-box`, { waitUntil: 'networkidle'});
 
         logger.info('Checking visibility of userName field');
         const isUserNameVisible = await page.isVisible('#userName');

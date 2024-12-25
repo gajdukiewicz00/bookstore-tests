@@ -4,7 +4,7 @@ import {test, expect} from "@playwright/test";
  test.describe('Checkbox Tests',() =>{
      test('User can select checkbox', async ({ page })=>{
          logger.info('Navigating to Checkbox page');
-         await page.goto(`${process.env.BASE_URL}/checkbox`,{ waitUntil: 'networkidle' });
+         await page.goto(`${process.env.BASE_URL}/checkbox`, { waitUntil: 'networkidle'});
 
          logger.info('Expanding the tree structure');
          await page.click('.rct-option-expand-all');

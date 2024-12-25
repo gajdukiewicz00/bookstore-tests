@@ -2,24 +2,10 @@ const logger = require('../../utils/logger');
 import {test, expect} from '@playwright/test';
 
 test.describe('Web Tables Tests', () => {
-    test('User can add a new row to the table', async ({browser}) => {
-        const context = await browser.newContext({
-            blockedURLPatterns: ['*adplus.js*'],
-            args: ['--enable-unsafe-webgl'],
-        });
-        const page = await context.newPage();
-
-        page.on('console', (msg) => {
-            if (msg.type() === 'error') {
-                const text = msg.text();
-                if (!text.includes('adplus.js') && !text.includes('GroupMarkerNotSet')) {
-                    console.error('Browser error:', text);
-                }
-            }
-        });
-
+    test('User can add a new row to the table', async ({page}) => {
         logger.info('Navigating to Web Tables page');
         await page.goto(`${process.env.BASE_URL}/webtables`, { waitUntil: 'networkidle' });
+
 
         logger.info('Checking visibility of addNewRecordButton');
         const isAddButtonVisible = await page.isVisible('#addNewRecordButton');

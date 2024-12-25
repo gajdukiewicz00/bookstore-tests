@@ -4,7 +4,7 @@ import {test,expect} from "@playwright/test";
 test.describe('Radio Button Test', ()=>{
     test('User can select a radio button', async ({page}) =>{
         logger.info('Navigating to Radio Button page');
-        await page.goto(`${process.env.BASE_URL}/radio-button`, { waitUntil: 'networkidle' });
+        await page.goto(`${process.env.BASE_URL}/radio-button`, { waitUntil: 'networkidle'});
 
         logger.info('Selecting "Yes" radio button');
         await page.click('text=Yes');
