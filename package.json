@@ -11,9 +11,13 @@
   "description": "",
   "devDependencies": {
     "@playwright/test": "^1.49.1",
+    "allure-playwright": "^3.0.7",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "pg": "^8.13.1",
     "playwright": "^1.49.1"
+  },
+  "dependencies": {
+    "winston": "^3.17.0"
   }
 }

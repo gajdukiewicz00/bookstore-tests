@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Playwright Tests with Allure
 
 on:
   push:
@@ -8,8 +8,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -20,5 +21,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - name: Install Allure
+        run: npm install -g allure-commandline
+
+      - name: Generate Allure Report
+        run: allure generate allure-results --clean
+
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: allure-report

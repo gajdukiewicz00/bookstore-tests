@@ -1,11 +1,13 @@
 import { defineConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
-    testDir: './tests',
-    timeout: 30000,
-    retries: 1,
+    testDir: './src/tests',
+    reporter: [['html', { outputFolder: 'playwright-report' }]],
     use: {
-        baseURL: 'http://localhost:3000',
-        headless: true,
+        baseURL: process.env.BASE_URL || 'https://restful-booker.herokuapp.com',
+        trace: 'on',
     },
 });
