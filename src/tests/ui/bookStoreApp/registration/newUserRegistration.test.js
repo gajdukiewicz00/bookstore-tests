@@ -16,7 +16,7 @@ test.describe('New User Tests', () => {
             await page.fill('#password', 'Password123!');
 
             logger.info('Handling CAPTCHA...');
-            await solveCaptcha(page);
+            await handleCaptcha(page);
 
             logger.info('Submitting the registration form...');
             await page.click('#register');

@@ -1,51 +1,91 @@
 /*
-const logger = require('./logger');
+const playwright = require('playwright');
+const axios = require('axios');
 
-async function handleCaptcha(page) {
-    try {
-        logger.info('Locating CAPTCHA iframe...');
-        const iframeElement = await page.locator('iframe[title="reCAPTCHA"]').elementHandle();
-        const iframe = await iframeElement.contentFrame();
-        if (!iframe) {
-            throw new Error('CAPTCHA iframe not found.');
-        }
+// Your 2Captcha API Key
+const apiKey = `${process.env.CAPTCHA_API_KEY}`;
 
-        logger.info('Clicking on CAPTCHA checkbox...');
-        const checkbox = await iframe.locator('.recaptcha-checkbox');
-        await checkbox.click();
+// target URL with reCAPTCHA
+const url = "https://demoqa.com/register";
 
-        logger.info('Checking if CAPTCHA checkbox is checked...');
-        const isChecked = await checkbox.getAttribute('aria-checked');
-        if (isChecked === 'true') {
-            logger.info('CAPTCHA solved via checkbox interaction.');
-            return;
-        }
+(async () => {
+    // Start Playwright and open the browser
+    const browser = await playwright.chromium.launch({ headless: true });
+    const page = await browser.newPage();
 
-        logger.info('Fetching sitekey...');
-        const sitekey = await iframe.locator('.g-recaptcha').evaluate((el) => el.getAttribute('data-sitekey'));
-        if (!sitekey) {
-            throw new Error('reCAPTCHA sitekey not found.');
-        }
+    // Navigate to the target URL
+    await page.goto(url);
 
-        logger.info(`Sitekey retrieved: ${sitekey}`);
-        const pageUrl = page.url();
+    // Wait for the CAPTCHA iframe
+    const captchaFrame = await page.waitForSelector("iframe[src*='recaptcha']");
 
-        logger.info('Solving CAPTCHA via 2Captcha...');
-        const captchaSolution = await solveCaptcha(sitekey, pageUrl);
+    // Switch to the CAPTCHA iframe
+    const captchaFrameContent = await captchaFrame.contentFrame();
 
-        logger.info('Injecting CAPTCHA solution...');
-        await iframe.locator('#g-recaptcha-response').evaluate((el, solution) => {
-            el.value = solution;
-        }, captchaSolution);
+    // Extract the site key from the iframe's source
+    const siteKey = await captchaFrame.getAttribute('src');
+    const siteKeyMatch = siteKey.match(/k=([a-zA-Z0-9_-]+)/);
+    const siteKeyValue = siteKeyMatch ? siteKeyMatch[1] : null;
 
-        logger.info('Submitting CAPTCHA solution...');
-        await page.waitForTimeout(5000); // Wait for server validation
-
-        logger.info('CAPTCHA handled successfully.');
-    } catch (error) {
-        logger.error(`Error while handling CAPTCHA: ${error.message}`);
-        throw error;
+    if (!siteKeyValue) {
+        console.error("Could not extract site key.");
+        await browser.close();
+        return;
     }
-}
-module.exports = { handleCaptcha };
+
+    // Get the CAPTCHA checkbox element and click it
+    const captchaCheckbox = await captchaFrameContent.waitForSelector("#recaptcha-anchor");
+    await captchaCheckbox.click();
+
+    // Solve CAPTCHA using the 2Captcha API
+    const response = await axios.post('http://2captcha.com/in.php', null, {
+        params: {
+            key: apiKey,
+            method: 'userrecaptcha',
+            googlekey: siteKeyValue,
+            pageurl: url
+        }
+    });
+
+    const requestId = response.data.request;
+
+    // Poll the 2Captcha API until the CAPTCHA is solved
+    let captchaToken = null;
+    while (!captchaToken) {
+        const result = await axios.get('http://2captcha.com/res.php', {
+            params: {
+                key: apiKey,
+                action: 'get',
+                id: requestId
+            }
+        });
+
+        if (result.data.status === 1) {
+            captchaToken = result.data.request;
+        } else {
+            console.log('Waiting for CAPTCHA solution...');
+            await new Promise(resolve => setTimeout(resolve, 5000));  // Wait 5 seconds before retrying
+        }
+    }
+
+    console.log('Captcha solved, token:', captchaToken);
+
+    // Fill in the CAPTCHA response in the hidden input field
+    await page.evaluate((captchaToken) => {
+        document.querySelector("#g-recaptcha-response").value = captchaToken;
+    }, captchaToken);
+
+    // Optional: Take a screenshot of the page
+    await page.screenshot({ path: 'screengrab.png' });
+
+    // Optionally, submit the form or perform other actions
+    // For example, trigger a form submission:
+    // await page.click('#submit-button-selector');
+
+    // Wait for a while to observe the result
+    await page.waitForTimeout(5000);
+
+    // Close the browser
+    await browser.close();
+})();
 */
