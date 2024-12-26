@@ -3,6 +3,7 @@ const logger = require('../../../../utils/logger');
 
 test.describe('Login Tests', () =>{
     test('User can login with valid credentials', async ({page})=>{
+        await page.waitForTimeout(3000);
         logger.info('Navigating to Login page');
         await page.goto(`${process.env.BASE_URL}/login`, {waitUntil: "networkidle"});
 
