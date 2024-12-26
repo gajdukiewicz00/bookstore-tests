@@ -1,4 +1,4 @@
-const logger = require('../../utils/logger');
+const logger = require('../../../utils/logger');
 import {test, expect} from '@playwright/test';
 
 test.describe('Web Tables Tests', () => {

@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const {test, expect} = require('@playwright/test');
 const apiClient = require('../../../utils/apiClient');
 
 test.describe('BookStore API - POST Requests', () => {
