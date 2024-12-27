@@ -1,6 +1,9 @@
-const fs = require('fs');
-const dotenv = require('dotenv');
-const { Octokit } = require('@octokit/rest');
+import fs from 'fs';
+import dotenv from 'dotenv';
+import { Octokit } from '@octokit/rest';
+import sodium from 'tweetsodium';
+import { Buffer } from 'buffer';
+
 
 dotenv.config();
 
@@ -22,12 +25,7 @@ async function addSecret(name, value) {
             repo: REPO_NAME,
         });
 
-        const sodium = require('tweetsodium');
-        const keyBytes = Buffer.from(publicKey.key, 'base64');
-        const valueBytes = Buffer.from(value);
-        const encryptedBytes = sodium.seal(valueBytes, keyBytes);
-        const encryptedValue = Buffer.from(encryptedBytes).toString('base64');
-
+        // Добавление секрета
         await octokit.rest.actions.createOrUpdateRepoSecret({
             owner: REPO_OWNER,
             repo: REPO_NAME,
@@ -39,15 +37,6 @@ async function addSecret(name, value) {
         console.log(`Секрет "${name}" успешно добавлен.`);
     } catch (error) {
         console.error(`Ошибка при добавлении секрета "${name}":`, error.message);
-    }
-}
-
-async function uploadSecrets() {
-    const envVariables = dotenv.parse(fs.readFileSync('.env'));
-
-    for (const [key, value] of Object.entries(envVariables)) {
-        console.log(`Добавление секрета: ${key}`);
-        await addSecret(key, value);
     }
 }
 

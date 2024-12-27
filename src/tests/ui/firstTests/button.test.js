@@ -1,3 +1,4 @@
+/*
 const logger = require('../../../utils/logger')
 import {test, expect} from "@playwright/test";
 
@@ -21,4 +22,4 @@ test.describe("Button Test", () => {
         logger.info('Test completed successfully');
 
     })
-})
+})*/

@@ -1,28 +1,58 @@
-/*
 const {test, expect} = require('@playwright/test');
-const {handleCaptcha} = require('../../../../utils/handleCaptcha');
 const logger = require('../../../../utils/logger');
 
 test.describe('New User Tests', () => {
-    test('User can register a new account', async ({page}) => {
-        logger.info('Navigating to New User Registration page...');
-        await page.goto('https://demoqa.com/register', {waitUntil: 'networkidle'});
+    test('Bypass reCAPTCHA v2 with XPath', async ({ page }) => {
+        await page.goto('https://demoqa.com/register');
 
-        logger.info('Filling out the registration form...');
+        // Ввод данных для регистрации
         await page.fill('#firstname', 'John');
         await page.fill('#lastname', 'Doe');
-        await page.fill('#userName', 'newuser123');
-        await page.fill('#password', 'Password123!');
+        await page.fill('#userName', 'johndoe');
+        await page.fill('#password', 'StrongPassword123!');
 
-        logger.info('Submitting the registration form...');
+        // Найти iframe с reCAPTCHA
+        const captchaFrame = page.frame({ url: /recaptcha/ }); // Используем регулярное выражение для URL iframe
+        if (!captchaFrame) throw new Error('Iframe with reCAPTCHA not found.');
+
+        // Клик по чекбоксу reCAPTCHA
+        await captchaFrame.waitForSelector('#recaptcha-anchor', { timeout: 20000 });
+        await captchaFrame.click('#recaptcha-anchor');
+
+        // Ожидание появления элементов задачи
+        //await captchaFrame.waitForSelector('//table[contains(@class, "rc-imageselect-table")]//td[@class="rc-imageselect-tile"]', { timeout: 20000 });
+        await captchaFrame.waitForTimeout(20000);
+        const tiles = await captchaFrame.$$('xpath=//td[contains(@class, "rc-imageselect-tile")]');
+        if (!tiles.length) throw new Error('No tiles found for challenge.');
+
+        console.log(`Found ${tiles.length} tiles.`);
+        for (const tile of tiles) {
+            // Клик по каждому элементу
+            await tile.click();
+        }
+
+        // Клик по кнопке Verify
+        await captchaFrame.click('#recaptcha-verify-button');
+
+        // Подождать завершения обработки
+        await page.waitForTimeout(5000);
+
+        // Проверка успешного прохождения CAPTCHA
+        const response = await captchaFrame.evaluate(() => {
+            const recaptchaResponse = document.querySelector('[name="g-recaptcha-response"]');
+            return recaptchaResponse ? recaptchaResponse.value : null;
+        });
+
+        if (!response) throw new Error('CAPTCHA was not solved.');
+
+        // Клик по кнопке регистрации
         await page.click('#register');
 
-        logger.info('Validating successful registration...');
-        await page.waitForSelector('#name', {timeout: 10000});
-        const successMessage = await page.locator('#name').textContent();
+        // Проверка успешной регистрации
+        await page.waitForSelector('#name', { timeout: 10000 });
+        const successMessage = await page.textContent('#name');
         expect(successMessage).toContain('User registered successfully.');
-        logger.info('Test completed successfully.');
 
+        console.log('Test completed successfully.');
     });
 });
-*/
