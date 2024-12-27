@@ -1,11 +1,10 @@
-/*
 const logger = require('../../../utils/logger')
 import {test, expect} from "@playwright/test";
 
 test.describe("Button Test", () => {
     test('User can interact with buttons', async ({page}) => {
         logger.info('Navigating to Buttons page');
-        await page.goto(`${process.env.BASE_URL}/buttons`, {waitUntil: 'networkidle'});
+        await page.goto('https://demoqa.com/buttons', {waitUntil: 'networkidle'});
 
         logger.info('Double clicking the button');
         await page.dblclick('text=Double Click Me');
@@ -22,4 +21,4 @@ test.describe("Button Test", () => {
         logger.info('Test completed successfully');
 
     })
-})*/
+})

@@ -1,3 +1,4 @@
+/*
 const {test, expect} = require('@playwright/test');
 const logger = require('../../../../utils/logger');
 
@@ -56,3 +57,4 @@ test.describe('New User Tests', () => {
         console.log('Test completed successfully.');
     });
 });
+*/

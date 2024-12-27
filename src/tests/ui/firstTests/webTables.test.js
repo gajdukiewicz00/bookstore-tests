@@ -4,7 +4,7 @@ import {test, expect} from '@playwright/test';
 test.describe('Web Tables Tests', () => {
     test('User can add a new row to the table', async ({page}) => {
         logger.info('Navigating to Web Tables page');
-        await page.goto(`${process.env.BASE_URL}/webtables`, {waitUntil: 'networkidle'});
+        await page.goto('https://demoqa.com/webtables', {waitUntil: 'networkidle'});
 
 
         logger.info('Checking visibility of addNewRecordButton');
