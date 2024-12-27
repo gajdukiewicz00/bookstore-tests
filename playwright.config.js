@@ -12,7 +12,7 @@ export default defineConfig({
         ['html', { outputFolder: 'playwright-report' }],
     ],
     use: {
-        baseURL: process.env.BASE_URL || 'https://demoqa.com',
+        baseURL: process.env.BASE_URL,
         headless: true,
         trace: 'on',
     },
